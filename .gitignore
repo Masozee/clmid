@@ -17,4 +17,4 @@ yarn.lock
 .env
 
 # Ignore static files collected by Django
-static/
+venv/

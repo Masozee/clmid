@@ -11,4 +11,4 @@ from django.views.generic import TemplateView
 class HomeView(TemplateView):
     pass
 #calendar    
-web_home_view = HomeView.as_view(template_name="frontend/base.html")
+web_home_view = HomeView.as_view(template_name="frontend/index.html")
