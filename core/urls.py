@@ -39,6 +39,8 @@ urlpatterns = [
 
     path('verification/', include('verify_email.urls')),
 
+    path('tinymce/', include('tinymce.urls')),
+
     
 ]
 

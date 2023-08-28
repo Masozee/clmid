@@ -48,6 +48,7 @@ INSTALLED_APPS = [
 
     'crispy_forms',
     'crispy_bootstrap4',
+    'tinymce',
 
     # Local Apps
     'apps.accounts',

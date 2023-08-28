@@ -1,94 +1,72 @@
 from django.db import models
-from django.utils.text import slugify
 from django.utils import timezone
-import random
-import string
 from django.contrib.auth.models import User
+from tinymce.models import HTMLField
+from .mixins import UserStampedModel
 
-# Create your models here.
-class Categories(models.Model):
-    judul = models.CharField(max_length=200)
-    keterangan = models.TextField(blank=True, null=True)
-    date_created = models.DateTimeField(auto_now_add=True)
-    date_modified = models.DateTimeField(auto_now=True)
+class Category(UserStampedModel):
+    title = models.CharField(max_length=200)
+    description = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return self.judul
-    
-class Area(models.Model):
+        return self.title
+
+class Area(UserStampedModel):
     AREA_CATEGORY = (
         ('0', 'Provinsi'),
         ('1', 'Kabupaten'),
         ('2', 'Kota'),
     )
-    nama = models.CharField(max_length=200)
-    kode = models.CharField(max_length=10, blank=True, null=True)
-    tipe = models.CharField(max_length=1, choices=AREA_CATEGORY)
-    parent = models.ForeignKey("self", limit_choices_to={'tipe': '0'}, verbose_name="Parent Area", on_delete=models.CASCADE, blank=True, null=True)
-    keterangan = models.TextField(blank=True, null=True)
-    date_created = models.DateTimeField(auto_now_add=True)
-    date_modified = models.DateTimeField(auto_now=True)
+    name = models.CharField(max_length=200)
+    code = models.CharField(max_length=10, blank=True, null=True)
+    type = models.CharField(max_length=1, choices=AREA_CATEGORY)
+    parent = models.ForeignKey("self", limit_choices_to={'type': '0'}, verbose_name="Parent Area", on_delete=models.CASCADE, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+class Faskes(UserStampedModel):
+    name = models.CharField(max_length=200)
+    location = models.ForeignKey(Area, verbose_name="Location Faskes", on_delete=models.CASCADE)
+    description = models.TextField(blank=True, null=True)
+
+    def __str__(self):
+        return self.name
+
+class Option(UserStampedModel):
+    name = models.CharField(max_length=250)
+    number = models.IntegerField(editable=False)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name="Value Category")
+    description = models.TextField(blank=True, null=True)
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.nama)
+        if not self.id:
+            last_option = Option.objects.filter(category=self.category).order_by('-number').first()
+            if last_option:
+                self.number = last_option.number + 1
+            else:
+                self.number = 1
+
         super().save(*args, **kwargs)
 
-    def __str__(self):
-        return self.nama
-
-class Faskes(models.Model):
-    nama = models.CharField(max_length=200)
-    lokasi = models.ForeignKey(Area, verbose_name="Lokasi Faskes", on_delete=models.CASCADE)
-    keterangan = models.TextField(blank=True, null=True)
-    date_created = models.DateTimeField(auto_now_add=True)
-    date_modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
-        return self.nama
-    
+        return self.name
 
-class Option(models.Model):
-    nama = models.CharField(max_length=250)
-    nomor = models.IntegerField()
-    kategori = models.ForeignKey("Categories", on_delete=models.CASCADE, verbose_name="Kategori Nilai")
-    keterangan = models.TextField(blank=True, null=True)
-    date_created = models.DateTimeField(auto_now_add=True)
-    date_modified = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.nama
-
-class Survey(models.Model):
+class Survey(UserStampedModel):
     STATUS_CHOICES = (
         ('approved', 'Approved'),
         ('reviewed', 'Reviewed'),
         ('rejected', 'Rejected'),
     )
 
-    judul = models.CharField(max_length=250)
+    title = models.CharField(max_length=250)
     survey_id = models.CharField(max_length=10, unique=True)
     faskes = models.ForeignKey(Faskes, on_delete=models.CASCADE, null=True, blank=True)
-    keterangan = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     approved_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='approved_surveys')
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='created_surveys')
-    date_created = models.DateTimeField(auto_now_add=True)
-    date_modified = models.DateTimeField(auto_now=True)
-
-    def save(self, *args, **kwargs):
-        request = kwargs.pop('request', None)
-
-        if request:
-            if not self.id:  # New instance, set created_by and created timestamp
-                self.created_by = request.user
-            else:  # Existing instance, set approved_by and modified timestamp
-                self.approved_by = request.user
-                self.date_modified = timezone.now()
-
-        if not self.survey_id:
-            self.survey_id = self.generate_unique_survey_id()
-
-        super(Survey, self).save(*args, **kwargs)
 
     def generate_unique_survey_id(self):
         length = 9
@@ -103,31 +81,46 @@ class Survey(models.Model):
         self.save()
 
     def __str__(self):
-        return self.judul
+        return self.title
 
-class Question(models.Model):
-    survey = models.ForeignKey(Survey, on_delete=models.CASCADE, verbose_name="judul survey")
+class Respondent(models.Model):
+    nama = models.CharField(max_length=100)
+    usia = models.ForeignKey(Option, on_delete=models.CASCADE, related_name="Usia_Category", limit_choices_to={'category': 'Usia'})
+    gender = models.ForeignKey(Option, on_delete=models.CASCADE, related_name="Gender_Category", limit_choices_to={'category': 'Gender'})
+    faskes = models.ForeignKey(Faskes, on_delete=models.CASCADE)
+    jarnas = models.ForeignKey(Option, on_delete=models.CASCADE, related_name="Jarnas_Category", limit_choices_to={'category': 'Lembaga'})
+
+
+    def __str__(self):
+        return self.title
+
+class Question(UserStampedModel):
+    survey = models.ForeignKey(Survey, on_delete=models.CASCADE, verbose_name="Survey Title")
     question_text = models.TextField()
-    date_created = models.DateTimeField(auto_now_add=True)
-    date_modified = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.question_text
 
-
-class Answer(models.Model):
+class Answer(UserStampedModel):
     CHOICES = (
-        (1, 'Ya'),
-        (0, 'Tidak'),
-        (99, 'Tidak Menjawab'),
+        (1, 'Yes'),
+        (0, 'No'),
+        (99, 'No Answer'),
     )
 
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='survey_answers')
+    respondent = models.ForeignKey(Respondent, on_delete=models.CASCADE, related_name='survey_answers')
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     choice = models.IntegerField(choices=CHOICES)
     timestamp = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return f"Answer by {self.user.username} to '{self.survey.title}'"
+        return f"Answer by {self.respondent} to '{self.question.survey.title}'"
 
-    
+class Publication(UserStampedModel):
+    title = models.CharField(max_length=250)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    content = HTMLField()
+    created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name='created_publications')
+
+    def __str__(self):
+        return self.title
