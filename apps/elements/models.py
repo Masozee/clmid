@@ -95,25 +95,28 @@ class Respondent(models.Model):
 
 
     def __str__(self):
-        return self.title
+        return self.nama
 
 class Question(UserStampedModel):
     survey = models.ForeignKey(Option, on_delete=models.CASCADE, verbose_name="Survey Title", limit_choices_to={'category__title': 'Jenis Layanan'})
+    code = models.CharField(max_length=10)
     question_text = models.TextField()
     answer_category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name="Kategori Jawaban", related_name="Question_answer_Category",)
 
     def __str__(self):
-        return self.question_text
+        return self.code
 
 class Answer(UserStampedModel):
 
     respondent = models.ForeignKey(Respondent, on_delete=models.CASCADE, related_name='survey_answers')
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    choice = models.ForeignKey(Option, on_delete=models.CASCADE, related_name="Answer_choices", limit_choices_to={'category__title': question.answer_category})
+    choice = models.ForeignKey(Option, on_delete=models.CASCADE, related_name="Answer_choices")
 
+    def get_limit_choices_to(self):
+        return {'category__title': self.question.answer_category.title}
 
     def __str__(self):
-        return f"Answer by {self.respondent} to '{self.question.survey.title}'"
+        return f"Answer by {self.respondent} to '{self.question.survey.name}'"
 
 class Publication(UserStampedModel):
     title = models.CharField(max_length=250)

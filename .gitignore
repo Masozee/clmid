@@ -18,3 +18,5 @@ yarn.lock
 
 # Ignore static files collected by Django
 venv/
+
+*/migrations/
