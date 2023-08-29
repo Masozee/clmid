@@ -3,6 +3,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from tinymce.models import HTMLField
 from .mixins import UserStampedModel
+from django.core.exceptions import ValidationError
 
 class Category(UserStampedModel):
     title = models.CharField(max_length=200)
@@ -84,34 +85,32 @@ class Survey(UserStampedModel):
         return self.title
 
 class Respondent(models.Model):
+
+
     nama = models.CharField(max_length=100)
-    usia = models.ForeignKey(Option, on_delete=models.CASCADE, related_name="Usia_Category", limit_choices_to={'category': 'Usia'})
-    gender = models.ForeignKey(Option, on_delete=models.CASCADE, related_name="Gender_Category", limit_choices_to={'category': 'Gender'})
+    usia = models.ForeignKey(Option, on_delete=models.CASCADE, related_name="Usia_Category", limit_choices_to={'category__title': 'Usia'})
+    gender = models.ForeignKey(Option, on_delete=models.CASCADE, related_name="Gender_Category", limit_choices_to={'category__title': 'Gender'})
     faskes = models.ForeignKey(Faskes, on_delete=models.CASCADE)
-    jarnas = models.ForeignKey(Option, on_delete=models.CASCADE, related_name="Jarnas_Category", limit_choices_to={'category': 'Lembaga'})
+    jarnas = models.ForeignKey(Option, on_delete=models.CASCADE, related_name="Jarnas_Category", limit_choices_to={'category__title': 'Lembaga'})
 
 
     def __str__(self):
         return self.title
 
 class Question(UserStampedModel):
-    survey = models.ForeignKey(Survey, on_delete=models.CASCADE, verbose_name="Survey Title")
+    survey = models.ForeignKey(Option, on_delete=models.CASCADE, verbose_name="Survey Title", limit_choices_to={'category__title': 'Jenis Layanan'})
     question_text = models.TextField()
+    answer_category = models.ForeignKey(Category, on_delete=models.CASCADE, verbose_name="Kategori Jawaban", related_name="Question_answer_Category",)
 
     def __str__(self):
         return self.question_text
 
 class Answer(UserStampedModel):
-    CHOICES = (
-        (1, 'Yes'),
-        (0, 'No'),
-        (99, 'No Answer'),
-    )
 
     respondent = models.ForeignKey(Respondent, on_delete=models.CASCADE, related_name='survey_answers')
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    choice = models.IntegerField(choices=CHOICES)
-    timestamp = models.DateTimeField(auto_now_add=True)
+    choice = models.ForeignKey(Option, on_delete=models.CASCADE, related_name="Answer_choices", limit_choices_to={'category__title': question.answer_category})
+
 
     def __str__(self):
         return f"Answer by {self.respondent} to '{self.question.survey.title}'"

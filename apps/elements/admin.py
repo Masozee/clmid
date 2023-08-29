@@ -1,11 +1,6 @@
 from django.contrib import admin
-from .models import Category, Area, Faskes, Option, Survey, Question, Answer, Publication
+from .models import Category, Area, Faskes, Option, Survey, Question, Answer, Publication, Respondent
 from .mixins import BaseAdminMixin
-
-# Inline admin classes
-class QuestionInline(admin.TabularInline):
-    model = Question
-    extra = 1
 
 class AnswerInline(admin.TabularInline):
     model = Answer
@@ -36,7 +31,6 @@ class OptionAdmin(BaseAdminMixin, admin.ModelAdmin):
 @admin.register(Survey)
 class SurveyAdmin(BaseAdminMixin, admin.ModelAdmin):
     list_display = ('title', 'survey_id', 'faskes', 'approved_by', 'created_by', 'date_created', 'date_updated')
-    inlines = [QuestionInline]
 
 @admin.register(Question)
 class QuestionAdmin(BaseAdminMixin, admin.ModelAdmin):
@@ -45,10 +39,14 @@ class QuestionAdmin(BaseAdminMixin, admin.ModelAdmin):
 
 @admin.register(Answer)
 class AnswerAdmin(BaseAdminMixin, admin.ModelAdmin):
-    list_display = ('respondent', 'question', 'choice', 'timestamp')
+    list_display = ('respondent', 'question', 'choice',)
 
 @admin.register(Publication)
 class PublicationAdmin(BaseAdminMixin, admin.ModelAdmin):
     list_display = ('title', 'category', 'created_by', 'date_created', 'date_updated')
     # Comment out the following line if you don't want the inline for Publication in SurveyAdmin
     # inlines = [PublicationInline]
+
+@admin.register(Respondent)
+class RespondentAdmin(BaseAdminMixin, admin.ModelAdmin):
+    list_display = ('nama', 'usia', 'gender','faskes','jarnas')
