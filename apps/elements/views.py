@@ -70,3 +70,36 @@ elements_icons_fontawesome_view = ElementsView.as_view(template_name="elements/i
 elements_maps_googlemaps_view = ElementsView.as_view(template_name="elements/maps/googlemaps.html")
 elements_maps_vectormaps_view = ElementsView.as_view(template_name="elements/maps/vectormaps.html")
 elements_maps_leaflet_view = ElementsView.as_view(template_name="elements/maps/leaflet.html")
+
+
+from django.shortcuts import render
+from .forms import RespondentForm, AnswerForm
+from .models import Question
+
+def survey_form(request):
+    if request.method == 'POST':
+        respondent_form = RespondentForm(request.POST)
+        question_forms = [AnswerForm(request.POST, prefix=str(question.id)) for question in Question.objects.all()]
+
+        if respondent_form.is_valid() and all(form.is_valid() for form in question_forms):
+            respondent = respondent_form.save()
+
+            for form, question in zip(question_forms, Question.objects.all()):
+                answer = form.save(commit=False)
+                answer.respondent = respondent
+                answer.question = question
+                answer.save()
+
+            return render(request, 'test.html')
+
+    else:
+        respondent_form = RespondentForm()
+        question_forms = [AnswerForm(prefix=str(question.id)) for question in Question.objects.all()]
+
+    context = {
+        'respondent_form': respondent_form,
+        'question_forms': question_forms,
+        'questions': Question.objects.all(),
+    }
+
+    return render(request, 'test.html', context)

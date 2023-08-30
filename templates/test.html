@@ -1,0 +1,56 @@
+{% extends 'partials/base.html' %}
+{% load static %}
+
+{% block head_title %}
+    <title>Survey Form | Your App Name</title>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <div class="page-content">
+        <div class="container-fluid">
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box d-flex align-items-center justify-content-between">
+                        <h4 class="mb-0">Survey Form</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <form method="post" class="needs-validation" novalidate>
+                                {% csrf_token %}
+                                {{ respondent_form.as_p }}
+
+                                {% for question in questions %}
+                                <fieldset class="mb-4">
+                                    <legend>{{ question.question_text }}</legend>
+                                    {{ question_form.as_hidden }}
+
+                                    {% for choice in question.option_set.all %}
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="{{ question.id }}" id="choice_{{ choice.id }}" value="{{ choice.id }}" required>
+                                        <label class="form-check-label" for="choice_{{ choice.id }}">
+                                            {{ choice.name }}
+                                        </label>
+                                    </div>
+                                    {% endfor %}
+                                    <div class="invalid-feedback">Please select an option.</div>
+                                </fieldset>
+                                {% endfor %}
+
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div> <!-- container-fluid -->
+    </div> <!-- page-content -->
+</div> <!-- main-content -->
+{% endblock %}

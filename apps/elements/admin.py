@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Area, Faskes, Option, Survey, Question, Answer, Publication, Respondent
+from .models import Category, Area, Faskes, Option, Question, Answer, Publication, Respondent
 from .mixins import BaseAdminMixin
 
 class AnswerInline(admin.TabularInline):
@@ -28,13 +28,9 @@ class OptionAdmin(BaseAdminMixin, admin.ModelAdmin):
     list_display = ('name', 'number', 'category','created_by', 'updated_by', 'date_created', 'date_updated')
     list_filter = ('category',)  # Add category to the list of filters
 
-@admin.register(Survey)
-class SurveyAdmin(BaseAdminMixin, admin.ModelAdmin):
-    list_display = ('title', 'survey_id', 'faskes', 'approved_by', 'created_by', 'date_created', 'date_updated')
-
 @admin.register(Question)
 class QuestionAdmin(BaseAdminMixin, admin.ModelAdmin):
-    list_display = ('survey', 'question_text', 'date_created', 'date_updated')
+    list_display = ('code', 'question_text','kategori', 'date_created', 'date_updated')
     inlines = [AnswerInline]
 
 @admin.register(Answer)
@@ -49,4 +45,4 @@ class PublicationAdmin(BaseAdminMixin, admin.ModelAdmin):
 
 @admin.register(Respondent)
 class RespondentAdmin(BaseAdminMixin, admin.ModelAdmin):
-    list_display = ('nama', 'usia', 'gender','faskes','jarnas')
+    list_display = ('uuid', 'nama', 'usia', 'gender','faskes','jarnas')

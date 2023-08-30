@@ -1,60 +1,6 @@
 from django.urls import path
 
-from .views import (
-    elements_components_alerts_view,
-    elements_components_buttons_view,
-    elements_components_cards_view,
-    elements_components_carousel_view,
-    elements_components_dropdowns_view,
-    elements_components_grid_view,
-    elements_components_images_view,
-    elements_components_modals_view,
-    elements_components_offcanvas_view,
-    elements_components_progressbars_view,
-    elements_components_tabs_view,
-    elements_components_typography_view,
-    elements_components_video_view,
-    elements_components_general_view,
-    elements_components_colors_view,
-    elements_components_toasts_view,
-    elements_components_utilites_view,
-
-    elements_extended_lightbox_view,
-    elements_extended_rangeslider_view,
-    elements_extended_sweetalerts2_view,
-    elements_extended_sessiontimeout_view,
-    elements_extended_rating_view,
-    elements_extended_notifications_view,
-
-    elements_forms_basic_elements_view,
-    elements_forms_validation_view,
-    elements_forms_advanced_plugins_view,
-    elements_forms_editors_view,
-    elements_forms_fileupload_view,
-    elements_forms_wizard_view,
-    elements_forms_mask_view,
-
-    elements_tables_bootstrap_basic_view,
-    elements_tables_datatables_view,
-    elements_tables_responsive_tables_view,
-    elements_tables_editable_tables_view,
-
-    elements_charts_apexcharts_view,
-    elements_charts_echarts_view,
-    elements_charts_chartjs_view,
-    elements_charts_jqueryknob_view,
-    elements_charts_sparkline_view,
-
-    elements_icons_boxicons_view,
-    elements_icons_materialdesign_view,
-    elements_icons_dripicons_view,
-    elements_icons_fontawesome_view,
-
-    elements_maps_googlemaps_view,
-    elements_maps_vectormaps_view,
-    elements_maps_leaflet_view,
-    
-)
+from .views import *
 
 app_name = "elements"
 
@@ -119,4 +65,5 @@ urlpatterns=[
     path("maps/googlemaps", view = elements_maps_googlemaps_view, name="elements.maps.googlemaps"),
     path("maps/vectormaps", view = elements_maps_vectormaps_view, name="elements.maps.vectormaps"),
     path("maps/leaflet", view = elements_maps_leaflet_view, name="elements.maps.leaflet"),
+    path("survey/",view=survey_form, name='survey_form')
 ]
