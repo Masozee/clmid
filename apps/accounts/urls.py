@@ -47,7 +47,7 @@ urlpatterns = [
 
     #Contacts
     path("contacts/user_grid", view=apps_contacts_usergrid_view, name="contacts.usergrid"),
-    path("contacts/user_list", view=apps_contacts_userlist_view, name="contacts.userlist"),
+    path("contacts/", view=apps_contacts_userlist_view, name="contacts.userlist"),
     path("contacts/profile", view=apps_contacts_profile_view, name="contacts.profile"),
 
     #Blogs

@@ -1,0 +1,39 @@
+{% extends 'partials/base.html' %}
+{% load crispy_forms_tags %}
+{% load static %}
+
+{% block head_title %}
+    <title>Survey Form | Your App Name</title>
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <div class="page-content">
+        <div class="container-fluid">
+
+            <div class="row">
+                <div class="col-12">
+                    <div class="page-title-box d-flex align-items-center justify-content-between">
+                        <h4 class="mb-0">edit {{description}} Form</h4>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card">
+                        <div class="card-body">
+                            <form method="post" class="needs-validation" novalidate>
+                                {% csrf_token %}
+                                {{ edit_form | crispy}}
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div> <!-- container-fluid -->
+    </div> <!-- page-content -->
+</div> <!-- main-content -->
+{% endblock %}

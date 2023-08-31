@@ -2,6 +2,7 @@ from django.db import models
 from django.contrib.auth.models import User
 from django.utils import timezone
 from django.contrib import admin
+from import_export.admin import ImportExportModelAdmin
 
 class UserStampedModel(models.Model):
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, related_name='%(class)s_created', null=True, editable=False)
@@ -25,7 +26,7 @@ class UserStampedModel(models.Model):
 
 
 
-class BaseAdminMixin(admin.ModelAdmin):
+class BaseAdminMixin(ImportExportModelAdmin):
     def save_model(self, request, obj, form, change):
         if not change:
             obj.created_by = request.user

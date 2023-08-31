@@ -65,5 +65,8 @@ urlpatterns=[
     path("maps/googlemaps", view = elements_maps_googlemaps_view, name="elements.maps.googlemaps"),
     path("maps/vectormaps", view = elements_maps_vectormaps_view, name="elements.maps.vectormaps"),
     path("maps/leaflet", view = elements_maps_leaflet_view, name="elements.maps.leaflet"),
+
+
     path("survey/",view=survey_form, name='survey_form')
+  #  path("survey/list/", )
 ]

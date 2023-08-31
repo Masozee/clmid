@@ -9,4 +9,4 @@ class RespondentForm(forms.ModelForm):
 class AnswerForm(forms.ModelForm):
     class Meta:
         model = Answer
-        fields = ('respondent', 'question', 'choice')
+        fields = '__all__'

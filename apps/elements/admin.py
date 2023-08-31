@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Category, Area, Faskes, Option, Question, Answer, Publication, Respondent
 from .mixins import BaseAdminMixin
+from import_export.admin import ImportExportModelAdmin
 
 class AnswerInline(admin.TabularInline):
     model = Answer
