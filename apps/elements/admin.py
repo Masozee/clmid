@@ -46,4 +46,4 @@ class PublicationAdmin(BaseAdminMixin, admin.ModelAdmin):
 
 @admin.register(Respondent)
 class RespondentAdmin(BaseAdminMixin, admin.ModelAdmin):
-    list_display = ('uuid', 'nama', 'usia', 'gender','faskes','jarnas')
+    list_display = ('uuid', 'id_respondent', 'usia', 'gender','faskes','jarnas')

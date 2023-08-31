@@ -14,6 +14,10 @@ class Category(UserStampedModel):
     def __str__(self):
         return self.title
 
+    class Meta:
+        verbose_name = "Kategori"
+        verbose_name_plural = "Kategori"
+
 class Area(UserStampedModel):
     AREA_CATEGORY = (
         ('0', 'Provinsi'),
@@ -29,6 +33,10 @@ class Area(UserStampedModel):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = "Provinsi/Kabupaten/Kota"
+        verbose_name_plural = "Provinsi/Kabupaten/Kota"
+
 class Faskes(UserStampedModel):
     name = models.CharField(max_length=200)
     location = models.ForeignKey(Area, verbose_name="Location Faskes", on_delete=models.CASCADE)
@@ -37,6 +45,9 @@ class Faskes(UserStampedModel):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = "Fasilitas Kesehatan"
+        verbose_name_plural = "Fasilitas Kesehatan"
 class Option(UserStampedModel):
     name = models.CharField(max_length=250)
     number = models.IntegerField(editable=False)
@@ -57,10 +68,14 @@ class Option(UserStampedModel):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = "Opsi jawaban"
+        verbose_name_plural = "Opsi jawaban"
+
 class Respondent(UserStampedModel):
 
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
-    nama = models.CharField(max_length=100, blank=True)
+    id_respondent = models.CharField(max_length=100, blank=True)
     usia = models.ForeignKey(Option, on_delete=models.CASCADE, related_name="Usia_Category", limit_choices_to={'category__title': 'Usia'})
     gender = models.ForeignKey(Option, on_delete=models.CASCADE, related_name="Gender_Category", limit_choices_to={'category__title': 'Gender'})
     faskes = models.ForeignKey(Faskes, on_delete=models.CASCADE)
@@ -70,7 +85,11 @@ class Respondent(UserStampedModel):
 
 
     def __str__(self):
-        return self.nama
+        return self.id_respondent
+
+    class Meta:
+        verbose_name = "Responden Survey"
+        verbose_name_plural = "Responden Survey"
 
 class Question(UserStampedModel):
     kategori = models.ForeignKey(Option, on_delete=models.CASCADE, verbose_name="Survey Title", limit_choices_to={'category__title': 'Jenis Layanan'})
@@ -80,6 +99,10 @@ class Question(UserStampedModel):
 
     def __str__(self):
         return self.code
+
+    class Meta:
+        verbose_name = "Pertanyaan Survey"
+        verbose_name_plural = "Pertanyaan Survey"
 
 class Answer(UserStampedModel):
 
@@ -94,6 +117,10 @@ class Answer(UserStampedModel):
     def __str__(self):
         return f"Answer by {self.respondent}"
 
+    class Meta:
+        verbose_name = "Jawaban Survey"
+        verbose_name_plural = "Jawaban Survey"
+
 class Publication(UserStampedModel):
     title = models.CharField(max_length=250)
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
@@ -102,3 +129,7 @@ class Publication(UserStampedModel):
 
     def __str__(self):
         return self.title
+
+    class Meta:
+        verbose_name = "Publikasi"
+        verbose_name_plural = "Publikasi"

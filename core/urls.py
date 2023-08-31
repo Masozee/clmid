@@ -24,7 +24,7 @@ urlpatterns = [
     #Pages
     path('pages/',include('apps.pages.urls')),
     #Elements
-    path('elements/',include('apps.elements.urls')),
+    path('dashboards/',include('apps.elements.urls')),
     #Accounts    
     path("account/", include("allauth.urls")),
 
